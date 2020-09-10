@@ -7,7 +7,11 @@ import com.vincenterc.jumpingjack.JumpingJackGame
 object DesktopLauncher {
     @JvmStatic
     fun main(arg: Array<String>) {
-        val config = LwjglApplicationConfiguration()
+        val config = LwjglApplicationConfiguration().apply {
+            title = "Jumping Jack"
+            width = 800
+            height = 640
+        }
         LwjglApplication(JumpingJackGame(), config)
     }
 }
