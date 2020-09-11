@@ -41,8 +41,8 @@ public class BaseActor extends Group
     private float elapsedTime;
     private boolean animationPaused;
 
-    private Vector2 velocityVec;
-    private Vector2 accelerationVec;
+    protected Vector2 velocityVec;
+    protected Vector2 accelerationVec;
     private float acceleration;
     private float maxSpeed;
     private float deceleration;
