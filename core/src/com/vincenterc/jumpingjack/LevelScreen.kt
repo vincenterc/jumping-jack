@@ -3,6 +3,7 @@ package com.vincenterc.jumpingjack
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Input.Keys
 import com.badlogic.gdx.graphics.Color
+import com.badlogic.gdx.scenes.scene2d.actions.Actions
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import kotlin.math.abs
@@ -18,6 +19,8 @@ class LevelScreen : BaseScreen() {
     private lateinit var timeLabel: Label
     private lateinit var messageLabel: Label
     private lateinit var keyTable: Table
+
+    var keyList: MutableList<Color> = mutableListOf()
 
     override fun initialize() {
         var tma = TilemapActor("map.tmx", mainStage)
@@ -60,6 +63,26 @@ class LevelScreen : BaseScreen() {
         for (obj in tma.getTileList("Platform")) {
             var props = obj.properties
             Platform(props.get("x") as Float, props.get("y") as Float, mainStage)
+        }
+
+        for (obj in tma.getTileList("Key")) {
+            var props = obj.properties
+            var key = Key(props.get("x") as Float, props.get("y") as Float, mainStage)
+            var color = props.get("color") as String
+            if (color == "red")
+                key.color = Color.RED
+            else
+                key.color = Color.WHITE
+        }
+
+        for (obj in tma.getTileList("Lock")) {
+            var props = obj.properties
+            var lock = Lock(props.get("x") as Float, props.get("y") as Float, mainStage)
+            var color = props.get("color") as String
+            if (color == "red")
+                lock.color = Color.RED
+            else
+                lock.color = Color.WHITE
         }
 
         jack.toFront()
@@ -143,6 +166,15 @@ class LevelScreen : BaseScreen() {
                 }
             }
 
+            if (solid is Lock && jack.overlaps(solid)) {
+                var lockColor = solid.color
+                if (keyList.contains(lockColor)) {
+                    solid.setEnabled(false)
+                    solid.addAction(Actions.fadeOut(0.5f))
+                    solid.addAction(Actions.after(Actions.removeActor()))
+                }
+            }
+
             if (jack.overlaps(solid) && solid.isEnabled()) {
                 var offset = jack.preventOverlap(solid)
 
@@ -153,6 +185,18 @@ class LevelScreen : BaseScreen() {
                         jack.velocityVec.y = 0f
                     }
                 }
+            }
+        }
+
+        for (key in BaseActor.getList(mainStage, Key::class.java.name)) {
+            if (jack.overlaps(key)) {
+                var keyColor = key.color
+                key.remove()
+                var keyIcon = BaseActor(0f, 0f, uiStage)
+                keyIcon.loadTexture("key-icon.png")
+                keyIcon.color = keyColor
+                keyTable.add(keyIcon)
+                keyList.add(keyColor)
             }
         }
     }
