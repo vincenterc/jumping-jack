@@ -51,6 +51,13 @@ class LevelScreen : BaseScreen() {
             Timer(props.get("x") as Float, props.get("y") as Float, mainStage)
         }
 
+        for (obj in tma.getTileList("Springboard")) {
+            var props = obj.properties
+            Springboard(props.get("x") as Float, props.get("y") as Float, mainStage)
+        }
+
+        jack.toFront()
+
         coinLabel = Label("Coins: $coins", BaseGame.labelStyle)
         coinLabel.color = Color.GOLD
         timeLabel = Label("Time: $time", BaseGame.labelStyle)
@@ -104,6 +111,12 @@ class LevelScreen : BaseScreen() {
             messageLabel.isVisible = true
             jack.remove()
             gameOver = true
+        }
+
+        for (springboard in BaseActor.getList(mainStage, Springboard::class.java.name)) {
+            if (jack.belowOverlaps(springboard) && jack.isFalling()) {
+                jack.spring()
+            }
         }
 
         for (actor in BaseActor.getList(mainStage, Solid::class.java.name)) {
