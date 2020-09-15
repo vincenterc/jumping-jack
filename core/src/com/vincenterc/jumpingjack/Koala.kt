@@ -29,7 +29,7 @@ class Koala(x: Float, y: Float, s: Stage) : BaseActor(x, y, s) {
         )
         walk = loadAnimationFromFiles(walkFileNames, 0.2f, true)
 
-        setBoundaryPolygon(6)
+        setBoundaryPolygon(8)
 
         belowSensor.loadTexture("white.png")
         belowSensor.setSize(this.width - 8f, 8f)
