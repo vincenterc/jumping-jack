@@ -36,6 +36,11 @@ class LevelScreen : BaseScreen() {
         var startProps = startPoint.properties
         jack = Koala(startProps.get("x") as Float, startProps.get("y") as Float, mainStage)
 
+        for (obj in tma.getTileList("Flag")) {
+            var props = obj.properties
+            Flag(props.get("x") as Float, props.get("y") as Float, mainStage)
+        }
+
         coinLabel = Label("Coins: $coins", BaseGame.labelStyle)
         coinLabel.color = Color.GOLD
         timeLabel = Label("Time: $time", BaseGame.labelStyle)
@@ -53,6 +58,18 @@ class LevelScreen : BaseScreen() {
     }
 
     override fun update(dt: Float) {
+        if (gameOver) return
+
+        for (flag in BaseActor.getList(mainStage, Flag::class.java.name)) {
+            if (jack.overlaps(flag)) {
+                messageLabel.setText("You Win!")
+                messageLabel.color = Color.LIME
+                messageLabel.isVisible = true
+                jack.remove()
+                gameOver = true
+            }
+        }
+
         for (actor in BaseActor.getList(mainStage, Solid::class.java.name)) {
             var solid = actor as Solid
 
