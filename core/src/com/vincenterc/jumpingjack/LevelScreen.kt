@@ -41,6 +41,11 @@ class LevelScreen : BaseScreen() {
             Flag(props.get("x") as Float, props.get("y") as Float, mainStage)
         }
 
+        for (obj in tma.getTileList("Coin")) {
+            var props = obj.properties
+            Coin(props.get("x") as Float, props.get("y") as Float, mainStage)
+        }
+
         coinLabel = Label("Coins: $coins", BaseGame.labelStyle)
         coinLabel.color = Color.GOLD
         timeLabel = Label("Time: $time", BaseGame.labelStyle)
@@ -67,6 +72,14 @@ class LevelScreen : BaseScreen() {
                 messageLabel.isVisible = true
                 jack.remove()
                 gameOver = true
+            }
+        }
+
+        for (coin in BaseActor.getList(mainStage, Coin::class.java.name)) {
+            if (jack.overlaps(coin)) {
+                coins++
+                coinLabel.setText("Coins: $coins")
+                coin.remove()
             }
         }
 
