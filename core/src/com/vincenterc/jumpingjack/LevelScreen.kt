@@ -1,5 +1,6 @@
 package com.vincenterc.jumpingjack
 
+import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Input.Keys
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.Label
@@ -54,6 +55,11 @@ class LevelScreen : BaseScreen() {
         for (obj in tma.getTileList("Springboard")) {
             var props = obj.properties
             Springboard(props.get("x") as Float, props.get("y") as Float, mainStage)
+        }
+
+        for (obj in tma.getTileList("Platform")) {
+            var props = obj.properties
+            Platform(props.get("x") as Float, props.get("y") as Float, mainStage)
         }
 
         jack.toFront()
@@ -122,6 +128,21 @@ class LevelScreen : BaseScreen() {
         for (actor in BaseActor.getList(mainStage, Solid::class.java.name)) {
             var solid = actor as Solid
 
+            if (solid is Platform) {
+                if (jack.isJumping() && jack.overlaps(solid))
+                    solid.setEnabled(false)
+
+                if (jack.isJumping() && !jack.overlaps(solid))
+                    solid.setEnabled(true)
+
+                if (jack.isFalling()
+                    && !jack.overlaps(solid)
+                    && !jack.belowOverlaps(solid)
+                ) {
+                    solid.setEnabled(true)
+                }
+            }
+
             if (jack.overlaps(solid) && solid.isEnabled()) {
                 var offset = jack.preventOverlap(solid)
 
@@ -137,9 +158,21 @@ class LevelScreen : BaseScreen() {
     }
 
     override fun keyDown(keyCode: Int): Boolean {
+        if (gameOver) return false
+
         if (keyCode == Keys.SPACE) {
-            if (jack.isOnSolid()) jack.jump()
+            if (Gdx.input.isKeyPressed(Keys.DOWN)) {
+                for (actor in BaseActor.getList(mainStage, Platform::class.java.name)) {
+                    var platform = actor as Platform
+
+                    if (jack.belowOverlaps(platform))
+                        platform.setEnabled(false)
+                }
+            } else if (jack.isOnSolid()) {
+                jack.jump()
+            }
         }
+
         return false
     }
 }

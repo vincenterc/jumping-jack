@@ -107,4 +107,6 @@ class Koala(x: Float, y: Float, s: Stage) : BaseActor(x, y, s) {
     fun spring() {
         velocityVec.y = 1.5f * jumpSpeed
     }
+
+    fun isJumping() = velocityVec.y > 0
 }
