@@ -1,10 +1,22 @@
 package com.vincenterc.jumpingjack
 
 import com.badlogic.gdx.Input.Keys
+import com.badlogic.gdx.graphics.Color
+import com.badlogic.gdx.scenes.scene2d.ui.Label
+import com.badlogic.gdx.scenes.scene2d.ui.Table
 import kotlin.math.abs
 
 class LevelScreen : BaseScreen() {
     lateinit var jack: Koala
+
+    var gameOver = false
+    var coins = 0
+    var time = 60
+
+    private lateinit var coinLabel: Label
+    private lateinit var timeLabel: Label
+    private lateinit var messageLabel: Label
+    private lateinit var keyTable: Table
 
     override fun initialize() {
         var tma = TilemapActor("map.tmx", mainStage)
@@ -23,6 +35,21 @@ class LevelScreen : BaseScreen() {
         var startPoint = tma.getRectangleList("start")[0]
         var startProps = startPoint.properties
         jack = Koala(startProps.get("x") as Float, startProps.get("y") as Float, mainStage)
+
+        coinLabel = Label("Coins: $coins", BaseGame.labelStyle)
+        coinLabel.color = Color.GOLD
+        timeLabel = Label("Time: $time", BaseGame.labelStyle)
+        timeLabel.color = Color.LIGHT_GRAY
+        messageLabel = Label("Message", BaseGame.labelStyle)
+        messageLabel.isVisible = false
+        keyTable = Table()
+
+        uiTable.pad(20f)
+        uiTable.add(coinLabel)
+        uiTable.add(keyTable).expandX()
+        uiTable.add(timeLabel)
+        uiTable.row()
+        uiTable.add(messageLabel).colspan(3).expandY()
     }
 
     override fun update(dt: Float) {
